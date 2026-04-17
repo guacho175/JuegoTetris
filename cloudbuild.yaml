@@ -1,20 +1,20 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/juegotetris/tetris-neon:${_COMMIT_SHA}', '.']
+    args: ['build', '-t', 'gcr.io/juegotetris/neon-tetris-pro:${_COMMIT_SHA}', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/juegotetris/tetris-neon:${_COMMIT_SHA}']
+    args: ['push', 'gcr.io/juegotetris/neon-tetris-pro:${_COMMIT_SHA}']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
-      - 'tetris-neon'
+      - 'neon-tetris-pro'
       - '--image'
-      - 'gcr.io/juegotetris/tetris-neon:${_COMMIT_SHA}'
+      - 'gcr.io/juegotetris/neon-tetris-pro:${_COMMIT_SHA}'
       - '--region'
-      - 'us-central1'
+      - 'us-west1'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
@@ -38,4 +38,4 @@ substitutions:
   _COMMIT_SHA: 'latest'
 
 images:
-  - 'gcr.io/juegotetris/tetris-neon:${_COMMIT_SHA}'
+  - 'gcr.io/juegotetris/neon-tetris-pro:${_COMMIT_SHA}'
