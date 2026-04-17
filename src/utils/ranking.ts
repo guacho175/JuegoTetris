@@ -1,21 +1,32 @@
 import { RankingEntry, Difficulty } from '../types';
 
 const SHEETDB_API = 'https://sheetdb.io/api/v1/ue43sw297boe4';
-const LOCAL_STORAGE_KEY = 'tetris_neon_ranking';
 
 export async function fetchRanking(): Promise<RankingEntry[]> {
   try {
-    const res = await fetch(`${SHEETDB_API}?limit=10`);
-    if (!res.ok) throw new Error('API error');
+    console.log('[Ranking] Fetching from SheetDB...');
+    const res = await fetch(`${SHEETDB_API}?limit=50`);
+    if (!res.ok) {
+      console.error('[Ranking] API response not OK:', res.status);
+      throw new Error('API error: ' + res.status);
+    }
     const data = await res.json();
+    console.log('[Ranking] Raw data from SheetDB:', data);
+    
+    if (!Array.isArray(data)) {
+      console.error('[Ranking] Data is not an array:', data);
+      return [];
+    }
+    
     const sorted = data
-      .sort((a: RankingEntry, b: RankingEntry) => b.score - a.score)
+      .sort((a: any, b: any) => Number(b.score) - Number(a.score))
       .slice(0, 10);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(sorted));
+    
+    console.log('[Ranking] Sorted top 10:', sorted);
     return sorted;
-  } catch {
-    const local = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
-    return local;
+  } catch (error) {
+    console.error('[Ranking] Error fetching ranking:', error);
+    return [];
   }
 }
 
@@ -30,20 +41,27 @@ export async function saveScore(
     difficulty,
     date: new Date().toISOString().split('T')[0],
   };
+
+  console.log('[Ranking] Saving score:', entry);
+
   try {
     const res = await fetch(SHEETDB_API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify([entry]),
     });
-    if (!res.ok) throw new Error('API error');
-    await fetchRanking();
+    
+    if (!res.ok) {
+      console.error('[Ranking] Save response not OK:', res.status);
+      throw new Error('API error: ' + res.status);
+    }
+    
+    const result = await res.json();
+    console.log('[Ranking] Save result:', result);
     return true;
-  } catch {
-    const local = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
-    local.push(entry);
-    local.sort((a, b) => b.score - a.score);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(local.slice(0, 10)));
-    return true;
+  } catch (error) {
+    console.error('[Ranking] Error saving score:', error);
+    alert('Error guardando ranking. Intenta de nuevo.');
+    return false;
   }
 }
