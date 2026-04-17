@@ -8,7 +8,10 @@ export interface Position {
 export interface DifficultySettings {
   name: string;
   speed: number;
+  minSpeed: number;
   multiplier: number;
+  color: string;
+  label: string;
 }
 
 export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD' | 'EXTREME';

@@ -171,7 +171,10 @@ export const useTetris = (difficulty: Difficulty) => {
     lastTimeRef.current = time;
     dropCounterRef.current += deltaTime;
 
-    const dropInterval = DIFFICULTIES[difficulty].speed / gameState.level;
+    // Linear speed decrease with a floor so max speed stays playable
+    const settings = DIFFICULTIES[difficulty];
+    const speedDecrease = (gameState.level - 1) * 35;
+    const dropInterval = Math.max(settings.speed - speedDecrease, settings.minSpeed);
 
     if (dropCounterRef.current > dropInterval) {
       if (!activePiece) {

@@ -63,25 +63,40 @@ export const TETROMINOS: Record<TetrominoType, { shape: number[][]; color: strin
   },
 };
 
+// Speed = starting drop interval in ms
+// minSpeed = floor — the fastest interval allowed (higher = more playable)
+// The drop interval decreases by 35ms per level, but never below minSpeed
 export const DIFFICULTIES: Record<Difficulty, DifficultySettings> = {
   EASY: {
     name: 'Fácil',
+    label: 'Ideal para empezar',
     speed: 800,
+    minSpeed: 350,
     multiplier: 1,
+    color: '#00ffff',
   },
   MEDIUM: {
     name: 'Medio',
-    speed: 500,
+    label: 'Equilibrio perfecto',
+    speed: 550,
+    minSpeed: 220,
     multiplier: 2,
+    color: '#a78bfa',
   },
   HARD: {
     name: 'Difícil',
-    speed: 300,
+    label: 'Solo para expertos',
+    speed: 380,
+    minSpeed: 140,
     multiplier: 4,
+    color: '#fb923c',
   },
   EXTREME: {
     name: 'Extremo',
-    speed: 150,
+    label: 'Velocidad demencial',
+    speed: 250,
+    minSpeed: 90,
     multiplier: 8,
+    color: '#f43f5e',
   },
 };
