@@ -19,6 +19,7 @@ COPY --from=builder /app/ranking.json ./
 # Actually, I'll use tsx as a dev dependency to run it.
 RUN npm install -g tsx
 
-EXPOSE 3000
+ENV PORT=8080
+EXPOSE 8080
 ENV NODE_ENV=production
 CMD ["tsx", "server.ts"]
