@@ -21,7 +21,9 @@ export default function App() {
   } = useTetris(selectedDifficulty || 'EASY');
 
   const loadRanking = useCallback(async () => {
+    console.log('[App] Loading ranking...');
     const data = await fetchRanking();
+    console.log('[App] Ranking loaded:', data.length, 'entries');
     setRanking(data);
   }, []);
 
