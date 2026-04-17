@@ -1,13 +1,10 @@
 steps:
-  # 1. Construir la imagen de Docker
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/tetris-neon:$COMMIT_SHA', '.']
+    args: ['build', '-t', 'gcr.io/juegotetris/tetris-neon:$COMMIT_SHA', '.']
 
-  # 2. Subir la imagen a Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/tetris-neon:$COMMIT_SHA']
+    args: ['push', 'gcr.io/juegotetris/tetris-neon:$COMMIT_SHA']
 
-  # 3. Desplegar en Cloud Run con configuración de bajo consumo
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -15,7 +12,7 @@ steps:
       - 'deploy'
       - 'tetris-neon'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/tetris-neon:$COMMIT_SHA'
+      - 'gcr.io/juegotetris/tetris-neon:$COMMIT_SHA'
       - '--region'
       - 'us-central1'
       - '--platform'
@@ -38,4 +35,4 @@ steps:
       - '--cpu-throttling'
 
 images:
-  - 'gcr.io/$PROJECT_ID/tetris-neon:$COMMIT_SHA'
+  - 'gcr.io/juegotetris/tetris-neon:$COMMIT_SHA'
