@@ -1,25 +1,27 @@
-# Build stage
-FROM node:20-slim AS builder
+# Etapa 1: Construcción (Build)
+FROM node:22-alpine AS builder
+
+RUN apk add --no-cache python3 make g++ libc6-compat
+
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+
+COPY package.json package-lock.json* ./
+
+RUN rm -f package-lock.json && npm install
+
 COPY . .
+
 RUN npm run build
 
-# Final stage
-FROM node:20-slim
-WORKDIR /app
-COPY --from=builder /app/package*.json ./
-RUN npm install --omit=dev
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server.ts ./
-COPY --from=builder /app/ranking.json ./
-# Note: tsx is needed to run server.ts directly, or I could compile it.
-# For simplicity in this environment, I'll install tsx as a dependency or run node with strip types.
-# Actually, I'll use tsx as a dev dependency to run it.
-RUN npm install -g tsx
+# Etapa 2: Servidor (Nginx)
+FROM nginx:stable-alpine
 
-ENV PORT=8080
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+RUN rm -rf /usr/share/nginx/html/*
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
 EXPOSE 8080
-ENV NODE_ENV=production
-CMD ["tsx", "server.ts"]
+
+CMD ["nginx", "-g", "daemon off;"]

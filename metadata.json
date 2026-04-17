@@ -1,6 +1,7 @@
 {
-  "name": "Neon Tetris Pro",
-  "description": "Un juego de Tetris moderno y profesional con sistema de ranking y niveles de dificultad, listo para Cloud Run.",
+  "name": "tetris-neon",
+  "title": "Tetris Neón",
+  "description": "Tetris Neón - El clásico juego de bloques neon. Hecho por Galindez",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }
