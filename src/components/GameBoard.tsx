@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useCallback } from 'react';
+import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 import { inputHandler } from '../inputHandler';
 import { COLS, ROWS } from '../constants';
 import { DIFFICULTIES } from '../constants';
@@ -175,6 +176,34 @@ export const GameBoard: React.FC<NeonTetrisProps> = ({
           boxShadow: `0 0 30px ${diff.color}44, 0 0 60px ${diff.color}22, inset 0 0 0 2px ${diff.color}44`,
         }}
       />
+      {/* Mobile D‑pad */}
+      <div className="sm:hidden mt-1 flex flex-col items-center gap-1.5">
+        <button
+          onPointerDown={() => inputHandler.onRotate()}
+          className="w-14 h-14 flex items-center justify-center bg-slate-800/70 border border-slate-700 rounded-xl text-slate-300 active:bg-cyan-400 active:text-slate-950 transition-colors"
+        >
+          <ArrowUp className="w-6 h-6" />
+        </button>
+        <div className="flex gap-1.5">
+          {[[-1, 0, ArrowLeft], [0, 1, ArrowDown], [1, 0, ArrowRight]] as [number, number, any][]).map(([nx, ny, Icon], idx) => (
+            <button
+              key={idx}
+              onPointerDown={() => {
+                if (ny === 1) {
+                  // swipe down → drop
+                  inputHandler.onDrop();
+                } else {
+                  // left/right move
+                  inputHandler.onMove({ x: nx, y: 0 });
+                }
+              }}
+              className="w-14 h-14 flex items-center justify-center bg-slate-800/70 border border-slate-700 rounded-xl text-slate-300 active:bg-cyan-400 active:text-slate-950 transition-colors"
+            >
+              <Icon className="w-6 h-6" />
+            </button>
+          ))}
+        </div>
+      </div>
       <div className="flex gap-4 text-[10px] font-mono text-slate-500 uppercase">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full" style={{ background: diff.color, boxShadow: `0 0 6px ${diff.color}` }} />
