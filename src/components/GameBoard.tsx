@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useCallback } from 'react';
+import { inputHandler } from '../inputHandler';
 import { COLS, ROWS } from '../constants';
 import { DIFFICULTIES } from '../constants';
 import { Difficulty } from '../types';
@@ -125,30 +126,41 @@ export const GameBoard: React.FC<NeonTetrisProps> = ({
   }, [draw]);
 
   useEffect(() => {
+    // Suscripciones al manejador híbrido
+    const moveSub = (dir: { x: number; y: number }) => onMove(dir);
+    const rotateSub = () => onRotate();
+    const accelerateSub = () => onDrop(); // caída suave
+
+    inputHandler.onMove(moveSub);
+    inputHandler.onRotate(rotateSub);
+    inputHandler.onAccelerate(accelerateSub);
+
+    // Mantener teclas de pausa y reinicio (solo esas)
     const onKey = (e: KeyboardEvent) => {
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+      if (['p', 'P', 'r', 'R'].includes(e.key)) {
         e.preventDefault();
-      }
-      if (gameState.gameOver || gameState.paused) {
-        if (e.key === 'r' || e.key === 'R') onRestart();
         if (e.key === 'p' || e.key === 'P') onPause();
-        return;
-      }
-      switch (e.key) {
-        case 'ArrowLeft': onMove({ x: -1, y: 0 }); break;
-        case 'ArrowRight': onMove({ x: 1, y: 0 }); break;
-        case 'ArrowDown': onDrop(); break;
-        case 'ArrowUp': onRotate(); break;
-        case ' ': onHardDrop(); break;
-        case 'p':
-        case 'P': onPause(); break;
-        case 'r':
-        case 'R': onRestart(); break;
+        if (e.key === 'r' || e.key === 'R') onRestart();
       }
     };
     window.addEventListener('keydown', onKey, { passive: false });
-    return () => window.removeEventListener('keydown', onKey);
-  }, [gameState.gameOver, gameState.paused, onMove, onRotate, onDrop, onHardDrop, onPause, onRestart]);
+    return () => {
+      // No hay método de desuscripción en inputHandler, pero removemos listener de pausa/reinicio
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [onMove, onRotate, onDrop, onPause, onRestart]);
+
+  // Manejo del hard drop con la barra espaciadora (solo teclado)
+  useEffect(() => {
+    const onSpace = (e: KeyboardEvent) => {
+      if (e.key === ' ') {
+        e.preventDefault();
+        onHardDrop();
+      }
+    };
+    window.addEventListener('keydown', onSpace);
+    return () => window.removeEventListener('keydown', onSpace);
+  }, [onHardDrop]);
 
   const diff = DIFFICULTIES[gameState.difficulty];
 
