@@ -1,67 +1,79 @@
-# Neon Tetris Pro
+<div align="center">
+  <img width="100%" src="./banner.png" alt="Tetris Neón Cyberpunk" style="border-radius: 12px; object-fit: cover;" />
+  
+  # 🕹️ Tetris Neón
+  
+  **Una reimaginación cyberpunk del legendario juego de bloques.**
+  
+  [**🎮 JUEGA AHORA EN VIVO**](https://tetris-neon-app-url-placeholder)
 
-Un juego de Tetris moderno y profesional construido con React (Vite) y Node.js (Express), listo para ser desplegado en Google Cloud Run.
+</div>
 
-## Características
-- **Mecánicas Clásicas**: Caída, rotación, movimiento lateral y "hard drop".
-- **Dificultad Dinámica**: 4 niveles (Fácil, Medio, Difícil, Extremo) que afectan la velocidad y el multiplicador de puntos.
-- **Sistema de Ranking**: Top 10 persistente (almacenado en `ranking.json`).
-- **Interfaz Moderna**: Estética "Neon Tech" con animaciones fluidas usando `motion`.
-- **Arquitectura Full-Stack**: Frontend rápido con Vite y Backend ligero con Express.
-- **Contenedorizado**: Listo para Docker y Google Cloud Run.
+---
 
-## Requisitos Previos
-- Node.js (v18 o superior)
-- Docker (opcional, para despliegue)
+## 🌟 Descripción
 
-## Instalación y Ejecución Local
+**Tetris Neón** rediseña la clásica experiencia de puzles con una moderna estética **cyberpunk oscuro (Dark Mode)**, bloques de neones iluminados y una mecánica progresiva. Desarrollado con velocidad y respuesta ultrarrápida en mente, cuenta con soporte híbrido para computadoras de escritorio y dispositivos móviles mediante un D-pad interactivo y deslizamientos en pantalla, acompañado de una banda sonora electrónica integrada.
 
-1. Instalar dependencias:
+El proyecto incorpora animaciones fluidas, previsualización de la siguiente pieza y un sistema inmersivo de pausas y reanudaciones.
+
+## 🚀 Arquitectura del Proyecto
+
+El sistema está construido bajo los siguientes modernos estándares tecnológicos:
+
+- **Framework y UI**: 
+  - Desarrollado como una *Single Page Application (SPA)*.
+  - Basado en los _Hooks_ y ciclos de vida avanzados de **React 19**, construido con **Vite** para una inyección de dependencias instantánea.
+  - Tipado de datos estricto definido de forma nativa en **TypeScript**.
+  - Estilizado utilizando **Tailwind CSS V4** (efectos *glassmorphism* radiales e iluminación LED) suplementado con visuales suaves por **Motion**.
+  
+- **Motor Gráfico e Interactividad**:
+  - Un bucle de renderizado optimizado basado en `requestAnimationFrame` que interactúa en tiempo real sobre el lienzo `<canvas>`.  
+  - Se implementa un manejador singular de Inputs (`inputHandler.js`) para coordinar la superposición entre toques de pantallas táctiles y teclado físico, impidiendo scroll indeseado y lag de pulsación (Soft Drop y Hard Drop).
+  
+- **Persistencia de Datos**:
+  - Conexión por API Rest configurada sin servidor backend vía `SheetDB` para registrar y calcular competitivamente los Tops Mundiales permanentemente a través de la web; operando también con respaldo preventivo mediante el uso de `localStorage` para almacenamiento persistente del mismo dispositivo.
+
+- **Infraestructura y Despliegue Automático (CI/CD)**:
+  - Totalmente adaptado para estar alojado en la nube con un `Dockerfile` multietapa liviano. Empaquetado a través de Node Alpine y expuesto permanentemente gracias a **Nginx** redirigido universalmente al puerto dinámico `8080`.
+  - Preparado para las instancias auto-escalables con 0-in-Idle en entornos del estilo de **Google Cloud Run**.
+
+## 🕹️ Cómo Jugar
+
+1. **Escritorio**: 
+   - Utiliza la **Flecha Izquierda / Derecha** para deslizar la pieza. 
+   - **Flecha Arriba** para rotarla. 
+   - **Flecha Abajo** para una caída suave (Soft Drop).
+   - **Barra Espaciadora** para anclarla inmediatamente (Hard Drop).
+   - **P** para pausar/reanudar y **R** para reiniciar la partida.
+2. **Móviles**: Disfruta del D-pad integrado bajo el tablero o utiliza las mecánicas de *Swipe* deslizando tu dedo en las direcciones hacia donde quieras incidir visualmente en la pantalla principal de la malla.
+3. El reproductor musical tiene controles en la parte inferior para mutear/desmutear y pausar el ritmo sin pausar tu juego completamente si así lo deseas. 
+
+## ⚙️ Correr en Local (Desarrollo)
+
+Siga estas instrucciones para levantar el servidor y visualizar el proyecto en su máquina:
+
+**Requisitos Previos:** Asegúrate de tener instalado en tu computadora **Node.js** (versión 18+ recomendada) y Git.
+
+1. **Clonar e Ingresar al directorio del juego**:
+   ```bash
+   git clone https://github.com/tu-usuario/JuegoTetris.git
+   cd JuegoTetris
+   ```
+
+2. **Instalar Dependencias Base**:
    ```bash
    npm install
    ```
 
-2. Ejecutar en modo desarrollo (Backend + Frontend con HMR):
+3. **Ejecutar el Servidor Ligero de Vite**:
    ```bash
    npm run dev
    ```
-   La aplicación estará disponible en `http://localhost:3000`.
 
-## Despliegue en Google Cloud Run
+4. **Visualizar el Proyecto**:
+   Abre una pestaña en tu navegador web y dirígete a la ruta local arrojada por terminal, generalmente [http://localhost:3000](http://localhost:3000) (o el puerto subsecuente).
 
-### 1. Construir la Imagen Docker
-Reemplaza `PROJECT_ID` con tu ID de proyecto de Google Cloud.
+## 📜 Licencia y Créditos
 
-```bash
-docker build -t gcr.io/PROJECT_ID/neon-tetris .
-```
-
-### 2. Subir a Artifact Registry o GCR
-```bash
-docker push gcr.io/PROJECT_ID/neon-tetris
-```
-
-### 3. Desplegar en Cloud Run
-```bash
-gcloud run deploy neon-tetris \
-  --image gcr.io/PROJECT_ID/neon-tetris \
-  --platform managed \
-  --region us-central1 \
-  --allow-unauthenticated
-```
-
-## Notas Técnicas y Resumen de Decisiones
-
-### Arquitectura Full-Stack
-Se eligió una arquitectura de **Express + Vite** para permitir un backend ligero que gestione la persistencia del ranking. Aunque el juego es principalmente del lado del cliente, el servidor centraliza los récords de los jugadores.
-
-### Persistencia
-Para este proyecto, se utiliza un archivo `ranking.json`. 
-**Advertencia para Cloud Run**: Cloud Run utiliza un sistema de archivos efímero. Esto significa que si el contenedor se reinicia o se escala, los datos del ranking se perderán. 
-**Recomendación para Producción**: Integrar con una base de datos externa como **Google Cloud Firestore** o **Cloud SQL** para una persistencia real y duradera.
-
-### Juego y Rendimiento
-Se utiliza `requestAnimationFrame` para el ciclo del juego, asegurando una fluidez de 60fps independiente de la carga de React. La lógica está aislada en un custom hook `useTetris` para mantener los componentes limpios y reactivos.
-
----
-Construido por Neon Tetris Pro Team.
+Proyecto desarrollado por **Galindez & IA**. Toda la banda sonora preenlazada y recursos auditivos implementados han sido tomados explícitamente y sin necesidad de derechos de copyright para favorecer un código libre y público.
