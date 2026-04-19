@@ -5,7 +5,7 @@
   
   **Una reimaginación cyberpunk del legendario juego de bloques.**
   
-  [**🎮 JUEGA AHORA EN VIVO**](https://tetris-neon-app-url-placeholder)
+  [**🎮 JUEGA AHORA EN VIVO**](https://neon-tetris-pro-77199174767.us-west1.run.app/)
 
 </div>
 
