@@ -185,7 +185,7 @@ export const GameBoard: React.FC<NeonTetrisProps> = ({
           <ArrowUp className="w-6 h-6" />
         </button>
         <div className="flex gap-1.5">
-          {[[-1, 0, ArrowLeft], [0, 1, ArrowDown], [1, 0, ArrowRight]] as [number, number, any][]).map(([nx, ny, Icon], idx) => (
+          {([[-1, 0, ArrowLeft], [0, 1, ArrowDown], [1, 0, ArrowRight]] as [number, number, any][]).map(([nx, ny, Icon], idx) => (
             <button
               key={idx}
               onPointerDown={() => {
