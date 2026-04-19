@@ -1,10 +1,13 @@
 steps:
+  # 1. Construir la imagen de Docker
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/juegotetris/neon-tetris-pro:${_COMMIT_SHA}', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/neon-tetris-pro:$COMMIT_SHA', '.']
 
+  # 2. Subir la imagen a Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/juegotetris/neon-tetris-pro:${_COMMIT_SHA}']
+    args: ['push', 'gcr.io/$PROJECT_ID/neon-tetris-pro:$COMMIT_SHA']
 
+  # 3. Desplegar en Cloud Run con configuración de bajo consumo
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -12,7 +15,7 @@ steps:
       - 'deploy'
       - 'neon-tetris-pro'
       - '--image'
-      - 'gcr.io/juegotetris/neon-tetris-pro:${_COMMIT_SHA}'
+      - 'gcr.io/$PROJECT_ID/neon-tetris-pro:$COMMIT_SHA'
       - '--region'
       - 'us-west1'
       - '--platform'
@@ -20,22 +23,20 @@ steps:
       - '--allow-unauthenticated'
       - '--port'
       - '8080'
+      # --- Configuración de bajo consumo ---
       - '--min-instances'
-      - '0'
+      - '0'            # Escala a CERO cuando no hay tráfico (no pagas nada)
       - '--max-instances'
-      - '2'
+      - '2'            # Máximo 2 instancias simultáneas (evita escalar de más)
       - '--memory'
-      - '256Mi'
+      - '256Mi'        # 256MB de RAM es suficiente para Nginx + archivos estáticos
       - '--cpu'
-      - '1'
+      - '1'            # 1 vCPU
       - '--concurrency'
-      - '80'
+      - '80'           # Hasta 80 requests por instancia antes de escalar
       - '--timeout'
-      - '30'
-      - '--cpu-throttling'
-
-substitutions:
-  _COMMIT_SHA: 'latest'
+      - '30'           # Timeout de 30s por request (suficiente para archivos estáticos)
+      - '--cpu-throttling' # CPU solo activa durante requests (no en idle)
 
 images:
-  - 'gcr.io/juegotetris/neon-tetris-pro:${_COMMIT_SHA}'
+  - 'gcr.io/$PROJECT_ID/neon-tetris-pro:$COMMIT_SHA'
