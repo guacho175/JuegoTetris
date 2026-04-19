@@ -14,11 +14,25 @@ export default function App() {
   const [ranking, setRanking] = useState<RankingEntry[]>([]);
   const [playLoseTrack, setPlayLoseTrack] = useState(false);
   const [isGameStarted, setIsGameStarted] = useState(false);
+  const [showMobileRanking, setShowMobileRanking] = useState(false);
 
   const {
     grid, activePiece, nextPiece, gameState,
     movePiece, rotatePiece, hardDrop, resetGame, togglePause, drop
   } = useTetris(selectedDifficulty || 'EASY');
+
+  // Prevenir recarga accidental en medio de una partida
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isGameStarted && !gameState.gameOver && !gameState.paused) {
+        e.preventDefault();
+        e.returnValue = ''; // Necesario para Chrome
+        return '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isGameStarted, gameState.gameOver, gameState.paused]);
 
   const loadRanking = useCallback(async () => {
     console.log('[App] Loading ranking...');
@@ -89,7 +103,7 @@ export default function App() {
           initial={{ x: -50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="w-full lg:w-44 xl:w-52 p-2 sm:p-3 lg:border-r border-slate-800 bg-slate-900/30 backdrop-blur-md order-2 lg:order-1 flex flex-col flex-shrink-0"
+          className={`w-full lg:w-44 xl:w-52 p-2 sm:p-3 lg:border-r border-slate-800 bg-slate-900/30 backdrop-blur-md order-2 lg:order-1 flex-col flex-shrink-0 ${showMobileRanking ? 'flex' : 'hidden'} lg:flex`}
         >
           <div className="flex items-center gap-2 mb-2">
             <ListOrdered className="w-3.5 h-3.5 text-magenta-500" />
@@ -123,7 +137,19 @@ export default function App() {
           </div>
         </motion.aside>
 
-        <main className="flex-1 flex flex-col items-center justify-center p-1 sm:p-2 lg:p-4 order-1 lg:order-2 overflow-hidden relative bg-[radial-gradient(#1e1e24_1px,transparent_1px)] [background-size:40px_40px]">
+        {!isGameStarted && (
+          <div className="lg:hidden w-full px-4 mb-2 order-2 shrink-0 z-50">
+            <button
+              onClick={() => setShowMobileRanking(!showMobileRanking)}
+              className="w-full flex items-center justify-center gap-2 py-2.5 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 rounded-lg text-slate-300 font-bold uppercase text-[10px] tracking-widest transition-colors"
+            >
+              <ListOrdered className="w-4 h-4 text-magenta-500" />
+              {showMobileRanking ? 'Ocultar Ranking' : 'Ver Ranking Global'}
+            </button>
+          </div>
+        )}
+
+        <main className="flex-1 flex flex-col items-center justify-start sm:justify-center p-0.5 sm:p-2 lg:p-4 order-1 lg:order-2 overflow-y-auto sm:overflow-hidden relative bg-[radial-gradient(#1e1e24_1px,transparent_1px)] [background-size:40px_40px] custom-scrollbar">
           <AnimatePresence mode="wait">
             {!selectedDifficulty ? (
               <motion.div
@@ -139,9 +165,9 @@ export default function App() {
                 key="game"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex flex-col lg:flex-row gap-8 items-start"
+                className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-center lg:items-start w-full max-w-7xl mx-auto justify-center"
               >
-                <div className="relative">
+                <div className="relative mt-2 lg:mt-0">
                   <GameBoard
                     grid={grid}
                     activePiece={activePiece}
@@ -187,29 +213,34 @@ export default function App() {
                   )}
                 </div>
 
-                <div className="flex flex-col gap-4 w-40">
-                  <div className="bg-slate-900/50 p-4 border border-slate-800 rounded-xl backdrop-blur-sm">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Trophy className="w-3.5 h-3.5 text-cyan-400" />
-                      <span className="text-xs font-mono uppercase text-slate-500">Puntaje</span>
+                <div className="flex flex-row lg:flex-col gap-2 lg:gap-4 w-full lg:w-40 px-4 lg:px-0 justify-center">
+                  <div className="bg-slate-900/50 p-2 lg:p-4 border border-slate-800 rounded-xl backdrop-blur-sm flex-1 lg:flex-none flex lg:flex-col items-center lg:items-stretch justify-between lg:justify-start gap-4 lg:gap-0">
+                    <div className="flex flex-col items-center lg:items-start">
+                      <div className="flex items-center gap-1.5 lg:gap-2 lg:mb-2 text-cyan-400">
+                        <Trophy className="w-3.5 h-3.5" />
+                        <span className="hidden lg:inline text-xs font-mono uppercase text-slate-500">Puntaje</span>
+                      </div>
+                      <p className="text-xl lg:text-2xl font-black text-cyan-400 tabular-nums leading-none lg:leading-normal">{gameState.score}</p>
                     </div>
-                    <p className="text-2xl font-black text-cyan-400 tabular-nums">{gameState.score}</p>
-                    <div className="flex justify-between mt-3 text-[10px] font-mono text-slate-600 uppercase">
-                      <span>Nivel</span>
-                      <span>{gameState.level}</span>
-                    </div>
-                    <div className="flex justify-between text-[10px] font-mono text-slate-600 uppercase">
-                      <span>Líneas</span>
-                      <span>{gameState.lines}</span>
+                    
+                    <div className="flex gap-4 lg:flex-col lg:gap-0 text-left lg:mt-3">
+                      <div className="flex lg:justify-between items-center gap-1 lg:gap-0 text-[9px] lg:text-[10px] font-mono text-slate-600 uppercase">
+                        <span className="text-slate-500">Nivel</span>
+                        <span className="font-bold text-slate-300">{gameState.level}</span>
+                      </div>
+                      <div className="flex lg:justify-between items-center gap-1 lg:gap-0 text-[9px] lg:text-[10px] font-mono text-slate-600 uppercase">
+                        <span className="text-slate-500">Líneas</span>
+                        <span className="font-bold text-slate-300">{gameState.lines}</span>
+                      </div>
                     </div>
                   </div>
 
-<div className="flex gap-2">
-                    <button onClick={togglePause} className="flex-1 flex items-center justify-center gap-1 p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400 transition-colors text-xs font-mono uppercase">
-                      {gameState.paused ? <Play className="w-3 h-3" /> : <Pause className="w-3 h-3" />}
+                  <div className="flex gap-2 w-auto lg:w-full">
+                    <button onClick={togglePause} className="flex items-center justify-center gap-1 p-3 lg:p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400 transition-colors text-xs font-mono uppercase aspect-square lg:aspect-auto lg:flex-1">
+                      {gameState.paused ? <Play className="w-4 h-4 lg:w-3 lg:h-3" /> : <Pause className="w-4 h-4 lg:w-3 lg:h-3" />}
                     </button>
-                    <button onClick={handleRestart} className="flex-1 flex items-center justify-center gap-1 p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-rose-400 transition-colors text-xs font-mono uppercase">
-                      <RotateCcw className="w-3 h-3" />
+                    <button onClick={handleRestart} className="flex items-center justify-center gap-1 p-3 lg:p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-rose-400 transition-colors text-xs font-mono uppercase aspect-square lg:aspect-auto lg:flex-1">
+                      <RotateCcw className="w-4 h-4 lg:w-3 lg:h-3" />
                     </button>
                   </div>
                 </div>
