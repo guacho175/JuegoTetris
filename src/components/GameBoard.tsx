@@ -127,16 +127,14 @@ export const GameBoard: React.FC<NeonTetrisProps> = ({
   }, [draw]);
 
   useEffect(() => {
-    // Suscripciones al manejador híbrido
     const moveSub = (dir: { x: number; y: number }) => onMove(dir);
     const rotateSub = () => onRotate();
-    const accelerateSub = () => onDrop(); // caída suave
+    const accelerateSub = () => onDrop();
 
-    inputHandler.onMove(moveSub);
-    inputHandler.onRotate(rotateSub);
-    inputHandler.onAccelerate(accelerateSub);
+    const unsubMove = inputHandler.onMove(moveSub);
+    const unsubRotate = inputHandler.onRotate(rotateSub);
+    const unsubAccel = inputHandler.onAccelerate(accelerateSub);
 
-    // Mantener teclas de pausa y reinicio (solo esas)
     const onKey = (e: KeyboardEvent) => {
       if (['p', 'P', 'r', 'R'].includes(e.key)) {
         e.preventDefault();
@@ -144,9 +142,11 @@ export const GameBoard: React.FC<NeonTetrisProps> = ({
         if (e.key === 'r' || e.key === 'R') onRestart();
       }
     };
-    window.addEventListener('keydown', onKey, { passive: false });
+    window.addEventListener('keydown', onKey);
     return () => {
-      // No hay método de desuscripción en inputHandler, pero removemos listener de pausa/reinicio
+      unsubMove();
+      unsubRotate();
+      unsubAccel();
       window.removeEventListener('keydown', onKey);
     };
   }, [onMove, onRotate, onDrop, onPause, onRestart]);
@@ -179,7 +179,7 @@ export const GameBoard: React.FC<NeonTetrisProps> = ({
       {/* Mobile D‑pad */}
       <div className="sm:hidden mt-1 flex flex-col items-center gap-1.5">
         <button
-          onPointerDown={() => inputHandler.onRotate()}
+          onPointerDown={(e) => { e.preventDefault(); onRotate(); }}
           className="w-14 h-14 flex items-center justify-center bg-slate-800/70 border border-slate-700 rounded-xl text-slate-300 active:bg-cyan-400 active:text-slate-950 transition-colors"
         >
           <ArrowUp className="w-6 h-6" />
@@ -188,14 +188,10 @@ export const GameBoard: React.FC<NeonTetrisProps> = ({
           {([[-1, 0, ArrowLeft], [0, 1, ArrowDown], [1, 0, ArrowRight]] as [number, number, any][]).map(([nx, ny, Icon], idx) => (
             <button
               key={idx}
-              onPointerDown={() => {
-                if (ny === 1) {
-                  // swipe down → drop
-                  inputHandler.onDrop();
-                } else {
-                  // left/right move
-                  inputHandler.onMove({ x: nx, y: 0 });
-                }
+              onPointerDown={(e) => {
+                e.preventDefault();
+                if (ny === 1) onDrop();
+                else onMove({ x: nx, y: 0 });
               }}
               className="w-14 h-14 flex items-center justify-center bg-slate-800/70 border border-slate-700 rounded-xl text-slate-300 active:bg-cyan-400 active:text-slate-950 transition-colors"
             >

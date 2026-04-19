@@ -8,12 +8,21 @@ class InputHandler {
     this.isTouchDevice = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
     this._init();
   }
-  onMove(cb) { this.moveCallbacks.push(cb); }
-  onRotate(cb) { this.rotateCallbacks.push(cb); }
-  onAccelerate(cb) { this.accelerateCallbacks.push(cb); }
-  _emitMove(dir) { this.moveCallbacks.forEach(cb => cb(dir)); }
-  _emitRotate() { this.rotateCallbacks.forEach(cb => cb()); }
-  _emitAccelerate() { this.accelerateCallbacks.forEach(cb => cb()); }
+  onMove(cb) {
+    this.moveCallbacks.push(cb);
+    return () => { this.moveCallbacks = this.moveCallbacks.filter(c => c !== cb); };
+  }
+  onRotate(cb) {
+    this.rotateCallbacks.push(cb);
+    return () => { this.rotateCallbacks = this.rotateCallbacks.filter(c => c !== cb); };
+  }
+  onAccelerate(cb) {
+    this.accelerateCallbacks.push(cb);
+    return () => { this.accelerateCallbacks = this.accelerateCallbacks.filter(c => c !== cb); };
+  }
+  _emitMove(dir) { this.moveCallbacks.forEach(cb => { if (typeof cb === 'function') cb(dir); }); }
+  _emitRotate() { this.rotateCallbacks.forEach(cb => { if (typeof cb === 'function') cb(); }); }
+  _emitAccelerate() { this.accelerateCallbacks.forEach(cb => { if (typeof cb === 'function') cb(); }); }
   _init() {
     // Keyboard
     window.addEventListener('keydown', (e) => {
