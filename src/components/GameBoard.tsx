@@ -25,7 +25,7 @@ interface NeonTetrisProps {
   onRestart: () => void;
 }
 
-const CELL = 28;
+const CELL = 36;
 const GRID_W = COLS * CELL;
 const GRID_H = ROWS * CELL;
 
@@ -166,18 +166,23 @@ export const GameBoard: React.FC<NeonTetrisProps> = ({
   const diff = DIFFICULTIES[gameState.difficulty];
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <canvas
-        ref={canvasRef}
-        width={GRID_W}
-        height={GRID_H}
-        className="rounded-lg"
+    <div className="flex flex-col items-center gap-1.5 w-full max-w-full">
+      <div 
+        className="relative shrink-0 rounded-lg overflow-hidden w-[min(85vw,33dvh)] h-[calc(min(85vw,33dvh)*2)] sm:w-[min(90vw,38vh)] sm:h-[calc(min(90vw,38vh)*2)] transition-all duration-300"
         style={{
-          boxShadow: `0 0 30px ${diff.color}44, 0 0 60px ${diff.color}22, inset 0 0 0 2px ${diff.color}44`,
+          boxShadow: `0 0 30px ${diff.color}33, 0 0 60px ${diff.color}1a, inset 0 0 0 2px ${diff.color}44`,
         }}
-      />
+      >
+        <canvas
+          ref={canvasRef}
+          width={GRID_W}
+          height={GRID_H}
+          className="w-full h-full block"
+        />
+      </div>
+      
       {/* Mobile D‑pad */}
-      <div className="sm:hidden mt-1 flex flex-col items-center gap-1.5">
+      <div className="sm:hidden mt-2 flex flex-col items-center gap-1.5">
         <button
           onPointerDown={(e) => { e.preventDefault(); onRotate(); }}
           className="w-14 h-14 flex items-center justify-center bg-slate-800/70 border border-slate-700 rounded-xl text-slate-300 active:bg-cyan-400 active:text-slate-950 transition-colors"
@@ -200,7 +205,8 @@ export const GameBoard: React.FC<NeonTetrisProps> = ({
           ))}
         </div>
       </div>
-      <div className="flex gap-4 text-[10px] font-mono text-slate-500 uppercase">
+      
+      <div className="flex gap-4 text-[10px] font-mono text-slate-500 uppercase mt-1">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full" style={{ background: diff.color, boxShadow: `0 0 6px ${diff.color}` }} />
           {diff.name}
