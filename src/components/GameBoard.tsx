@@ -168,7 +168,7 @@ export const GameBoard: React.FC<NeonTetrisProps> = ({
   return (
     <div className="flex flex-col items-center gap-1.5 w-full max-w-full">
       <div 
-        className="relative shrink-0 rounded-lg overflow-hidden w-[min(85vw,33dvh)] h-[calc(min(85vw,33dvh)*2)] sm:w-[min(90vw,38vh)] sm:h-[calc(min(90vw,38vh)*2)] transition-all duration-300"
+        className="relative shrink-0 rounded-lg overflow-hidden w-[min(85vw,26dvh)] h-[calc(min(85vw,26dvh)*2)] sm:w-[min(90vw,42vh)] sm:h-[calc(min(90vw,42vh)*2)] transition-all duration-300"
         style={{
           boxShadow: `0 0 30px ${diff.color}33, 0 0 60px ${diff.color}1a, inset 0 0 0 2px ${diff.color}44`,
         }}
