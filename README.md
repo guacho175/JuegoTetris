@@ -1,58 +1,50 @@
-# Tetris Neon
+# Tetris Neón 🧩
 
-Juego en vivo: https://neon-tetris-pro-77199174767.us-west1.run.app/
+Bienvenido al repositorio de **Tetris Neón**, una reinvención técnica y moderna del clásico juego de puzzle, desarrollado en **React**, **TypeScript** y **Vite**. Este proyecto forma parte del universo **Neon Arcade**, destacando por su estética retrowave y su arquitectura orientada al rendimiento.
 
-## Descripcion
+🌐 **Juega ahora en:** [https://tetris.orbynexdigital.cl/](https://tetris.orbynexdigital.cl/)
 
-Tetris Neon ofrece una experiencia de bloques moderna con visual neon, modos de dificultad, ranking global y controles hibridos.
+## 🚀 Arquitectura y Tecnologías
 
-## Estandar aplicado
+El juego está diseñado como una aplicación web de alto rendimiento (SPA), garantizando fluidez en los inputs del usuario (60 FPS) y un renderizado impecable a través de React.
 
-La implementacion mantiene el estandar de JuegoSerpiente para asegurar coherencia entre todos los juegos.
+- **Frontend:** React 19, TypeScript (para seguridad de tipos estricta y mejor mantenibilidad).
+- **Tooling:** Vite
+- **Estilos:** CSS modular (animaciones fluidas por GPU, variables CSS, y efectos de brillo *glow* dinámicos).
+- **Infraestructura:** Serverless nativo vía Vercel.
 
-- Estructura de pantalla consistente.
-- Sistema de estilos compartido.
-- Convenciones de build y despliegue equivalentes.
+## 🎮 Caso de Uso y Funcionalidades (Game Design)
 
-## Arquitectura comun
+El caso de uso principal de la aplicación es proveer una experiencia arcade completa tanto en dispositivos de escritorio como en terminales móviles. 
 
-- React 19 + TypeScript + Vite
-- Tailwind CSS v4 + motion/react
-- Motor de juego sobre canvas
-- Ranking remoto + fallback localStorage
-- Dockerfile multistage + cloudbuild.yaml
+### Funcionalidades Técnicas:
+* **Físicas y Lógica del Tablero:** Motor de matrices en tiempo real para detección de colisiones, rotación de piezas (Tetrominós) y eliminación de líneas con efectos en cadena.
+* **Responsive Design:** El tablero y los controles están programados para escalar dinámicamente y funcionar de manera nativa en navegadores móviles (Mobile-first). Cuenta con soporte para eventos táctiles (On-Screen D-Pad) para controlar las piezas.
+* **Sistema de Puntaje y Ranking:** Persistencia del estado de la partida, aumento de dificultad (drop speed) por nivel, y un sistema de ranking que guarda las puntuaciones máximas (High Scores), incentivando la rejugabilidad.
+* **Audio Interactivo:** Integración de sonido reactivo ante rotaciones, caídas rápidas y líneas completadas.
 
-## Controles
+## 🛠️ Instalación y Ejecución Local
 
-- Escritorio: izquierda/derecha mover, arriba rotar, abajo soft drop, espacio hard drop, P pausa, R reinicio.
-- Movil: D-pad tactil y gestos swipe.
+Si deseas correr este proyecto y modificar el código fuente:
 
-## Desarrollo local
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/guacho175/JuegoTetris.git
+   cd JuegoTetris
+   ```
 
-1. Instalar dependencias:
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
 
-```bash
-npm install
-```
+3. Inicia el servidor local:
+   ```bash
+   npm run dev
+   ```
 
-2. Ejecutar entorno local:
+4. Visualiza la aplicación en `http://localhost:5173`.
 
-```bash
-npm run dev
-```
+## 👨‍💻 Autor
 
-3. Validar tipado:
-
-```bash
-npm run lint
-```
-
-## Build y despliegue
-
-- Build: npm run build
-- Runtime: puerto 8080
-- Despliegue en Cloud Run usando Dockerfile y cloudbuild.yaml
-
-## Creditos
-
-Desarrollado por Galindez & IA.
+Desarrollado y mantenido por **Galindez** - 2026.
